@@ -1,0 +1,1 @@
+from indexflow.indexnow import *
