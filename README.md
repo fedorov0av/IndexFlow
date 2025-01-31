@@ -6,7 +6,7 @@ A straightforward solution for quick content indexing using the IndexNow protoco
 Install the package using pip:
 
 ```bash
-poetry add git+https://github.com/fedorov0av/IndexFlow.git
+poetry add git+https://github.com/fedorov0av/IndexFlow.git@<release_tag>
 ```
 
 ## Usage
