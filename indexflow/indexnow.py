@@ -1,3 +1,4 @@
+import re
 import httpx
 import requests
 
@@ -17,15 +18,16 @@ class IndexNow:
         self.search_engines = SEARCH_ENGINES
 
     def get_json(self, url: str) -> dict:
+        host = self.get_host_name(self.host)
         return {
-                'host': self.host,
+                'host': host,
                 'key': self.key,
-                'keyLocation': f'https://{self.host}/{self.key}.txt',
+                'keyLocation': f'{self.host}/{self.key}.txt',
                 'urlList':[
                     url
                 ]
                 }
-    
+
     async def async_add_to_index(self, url: str) -> list[httpx.Response]:
         """
         HTTP Response Codes for IndexNow API:
@@ -52,9 +54,11 @@ class IndexNow:
         async_client = httpx.AsyncClient()
         responses = []
         for search_engine_key in self.search_engines:
+            search_engine_url = self.search_engines[search_engine_key]
+            search_engine_host = self.get_host_name(search_engine_url)
             response = await async_client.post(
                 self.search_engines[search_engine_key],
-                headers={'Content-Type': 'application/json', 'charset': 'utf-8'},
+                headers={'Content-Type': 'application/json', 'charset': 'utf-8', 'Host': search_engine_host},
                 json=json
             )
             responses.append(response)
@@ -68,10 +72,21 @@ class IndexNow:
         session = requests.Session()
         responses = []
         for search_engine_key in self.search_engines:
+            search_engine_url = self.search_engines[search_engine_key]
+            search_engine_host = self.get_host_name(search_engine_url)
             response = session.post(
                 self.search_engines[search_engine_key], 
-                headers={'Content-Type': 'application/json', 'charset': 'utf-8'},
+                headers={'Content-Type': 'application/json', 'charset': 'utf-8', 'Host': search_engine_host},
                 json=json
             )
             responses.append(response)
         return responses
+    
+    @staticmethod
+    def get_host_name(url: str, need_http: bool=False) -> str:
+        pattern = r"https?://([a-zA-Z0-9.-]+)"
+        match = re.match(pattern, url)
+        if need_http:
+            return match.group(0)
+        else:
+            return match.group(1)
