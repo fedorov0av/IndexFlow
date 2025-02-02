@@ -5,17 +5,18 @@ import requests
 SEARCH_ENGINES = {
     "IndexNow": "https://api.indexnow.org/indexnow",
     "Bing": "https://www.bing.com/indexnow",
+    "Yandex": "https://yandex.com/indexnow",
     "Naver": "https://searchadvisor.naver.com/indexnow",
     "Seznam": "https://search.seznam.cz/indexnow",
-    "Yandex": "https://yandex.com/indexnow",
     "Yep": "https://indexnow.yep.com/indexnow",
 }
 
 class IndexNow:
-    def __init__(self, key: str, host: str) -> None:
-        self.key = key
-        self.host = host
-        self.search_engines = SEARCH_ENGINES
+    def __init__(self, key: str, host: str, all_search_engines: bool = False) -> None:
+        self.key: str = key
+        self.host: str = host
+        self.search_engines: dict = SEARCH_ENGINES
+        self.all_search_engines: bool = all_search_engines
 
     def get_json(self, url: str) -> dict:
         host = self.get_host_name(self.host)
@@ -62,6 +63,8 @@ class IndexNow:
                 json=json
             )
             responses.append(response)
+            if not self.all_search_engines:
+                break
         return responses
         
     def add_to_index(self, url: str) -> list[requests.Response]:
@@ -80,6 +83,8 @@ class IndexNow:
                 json=json
             )
             responses.append(response)
+            if not self.all_search_engines:
+                break
         return responses
     
     @staticmethod
