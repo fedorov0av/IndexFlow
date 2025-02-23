@@ -24,5 +24,5 @@ responses = await index_now.async_add_to_index(page_url)
 sync:
 ```python
 index_now = IndexNow(key=INDEXNOW_KEY, host=page_url)
-responses = await index_now.add_to_index(page_url)
+responses = index_now.add_to_index(page_url)
 ```
